@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cors =  require('cors');
 const apiRouter = require('./routes/apiRouter');
 const app = express();
 const { DATABASE_URL, PORT } = require('./config');
@@ -19,6 +20,9 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+
+app.options('*', cors())
+app.use(cors());
 
 let server;
 function runServer(databaseUrl = DATABASE_URL, port = PORT) {

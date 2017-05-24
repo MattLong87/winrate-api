@@ -9,7 +9,7 @@ const BearerStrategy = require('passport-http-bearer').Strategy;
 
 passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
     let user;
-    User.findOne({ email: email })
+    User.findOne({ email: email.toLowerCase() })
         .exec()
         .then(_user => {
             user = _user;
@@ -54,6 +54,12 @@ passport.deserializeUser((id, done) => {
 //MIDDLEWARE
 router.use(passport.initialize());
 
+router.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 router.get('/', (req, res) => {
     res.json({message: "WinRate API"});
 });
@@ -97,7 +103,7 @@ router.post('/users', (req, res) => {
         })
         .then(hash => {
             return User.create({
-                email: req.body.email,
+                email: req.body.email.toLowerCase(),
                 password: hash,
                 created: Date.now(),
                 name: {
