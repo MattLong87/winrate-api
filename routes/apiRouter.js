@@ -55,7 +55,7 @@ passport.deserializeUser((id, done) => {
 router.use(passport.initialize());
 
 router.get('/', (req, res) => {
-    res.send("WinRate API");
+    res.json({message: "WinRate API"});
 });
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
