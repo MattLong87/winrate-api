@@ -154,9 +154,9 @@ router.delete('/users/me/sessions', passport.authenticate('bearer', { session: f
             return res.json({ message: `Missing field: ${field}` });
         }
     }
-    User.update({ username: req.user.username }, { $pull: { sessions: { _id: req.body.sessionId } } })
+    User.findOneAndUpdate({ username: req.user.username }, { $pull: { sessions: { _id: req.body.sessionId } } }, {new: true})
         .exec()
-        .then(() => res.status(204).end())
+        .then((user) => res.json(user.apiRepr()))
 })
 
 module.exports = router;
