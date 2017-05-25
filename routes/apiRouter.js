@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { User } = require('../models/models');
+const cors =  require('cors');
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -59,6 +60,9 @@ router.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+
+router.options('*', cors())
+router.use(cors());
 
 router.get('/', (req, res) => {
     res.json({message: "WinRate API"});
