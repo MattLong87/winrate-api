@@ -1,15 +1,44 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-
-const {app, runServer, closeServer} = require('../server');
+const { TEST_DATABASE_URL } = require('../config');
+const { app, runServer, closeServer } = require('../server');
+const mongoose = require('mongoose');
+const faker = require('faker');
 
 const should = chai.should();
 chai.use(chaiHttp);
 
-describe('API', function () {
+//declare fakeUsers array to access in tests
+let fakeUsers = [];
+
+function seedUsers(numUsers) {
+  return new Promise((resolve, reject) => {
+    for (let i = 0; i++; i < numUsers) {
+      //let user = [faker.internet.email(), faker.internet.password()]
+      let user = "Matt";
+      fakeUsers.push(user);
+    }
+    resolve()
+  })
+    //console.log(fakeUsers);
+}
+
+function tearDownDb() {
+  return mongoose.connection.dropDatabase();
+}
+
+describe('Winrate API', function () {
+
   before(function () {
-    return runServer();
+    return runServer(TEST_DATABASE_URL);
   });
+  beforeEach(function () {
+    return seedUsers(10)
+    .then(console.log(fakeUsers));
+  })
+  afterEach(function () {
+    return tearDownDb();
+  })
   after(function () {
     return closeServer();
   });
@@ -22,4 +51,6 @@ describe('API', function () {
         res.should.be.json;
       });
   });
+
+
 });
