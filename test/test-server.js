@@ -12,15 +12,12 @@ chai.use(chaiHttp);
 let fakeUsers = [];
 
 function seedUsers(numUsers) {
-  return new Promise((resolve, reject) => {
     for (let i = 0; i++; i < numUsers) {
       //let user = [faker.internet.email(), faker.internet.password()]
       let user = "Matt";
       fakeUsers.push(user);
     }
-    resolve()
-  })
-    //console.log(fakeUsers);
+    console.log(fakeUsers);
 }
 
 function tearDownDb() {
@@ -33,8 +30,7 @@ describe('Winrate API', function () {
     return runServer(TEST_DATABASE_URL);
   });
   beforeEach(function () {
-    return seedUsers(10)
-    .then(console.log(fakeUsers));
+    return seedUsers(10);
   })
   afterEach(function () {
     return tearDownDb();
