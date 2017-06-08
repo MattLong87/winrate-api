@@ -68,6 +68,8 @@ router.get('/', (req, res) => {
     res.json({message: "WinRate API"});
 });
 
+
+//POST to login a user
 router.post('/login', passport.authenticate('local'), (req, res) => {
     User.findById(req.user.id)
     .exec()

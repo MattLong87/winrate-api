@@ -12,11 +12,15 @@ chai.use(chaiHttp);
 let fakeUsers = [];
 
 function seedUsers(numUsers) {
-    for (let i = 0; i < numUsers; i++) {
-      let user = [faker.internet.email(), faker.internet.password()]
-      fakeUsers.push(user);
-    }
-    console.log(fakeUsers);
+  for (let i = 0; i < numUsers; i++) {
+    let user = [faker.internet.email(), faker.internet.password()]
+    fakeUsers.push(user);
+    return User.hashPassword(password)
+      .then(function (hash) {
+        return User.create(generateFakeUser(email, hash))
+          .catch((err) => console.log(err))
+      })
+  }
 }
 
 function tearDownDb() {
@@ -47,5 +51,33 @@ describe('Winrate API', function () {
       });
   });
 
+  describe('User login endpoint', function(){
+    it('should log in a user on a POST request', function(){
 
+    })
+  })
+
+  describe('Create user endpoint', function(){
+    it('should create new user on a POST request', function(){
+
+    })
+  })
+
+  describe('/users/me endpoint', function(){
+    it('should return user information on a GET request', function(){
+
+    })
+  })
+
+  describe('/users/me/add-session endpoint', function(){
+    it('should add a session to user on a POST request', function(){
+
+    })
+  })
+
+  describe('/users/me/sessions endpoint', function(){
+    it('should delete a session on a DELETE request', function(){
+      
+    })
+  })
 });
