@@ -103,41 +103,71 @@ describe('Winrate API', function () {
         })
     })
 
-    it('should refuse login with incorrect credentials', function(){
+    it('should refuse login with incorrect credentials', function () {
       let userLogin = {
         email: fakeUsers[0][0],
         password: "wrongpassword"
       }
       return chai.request(app)
-      .post('/api/login')
-      .send(userLogin)
-      .catch(function(res){
-        res.should.have.status(401);
-      })
+        .post('/api/login')
+        .send(userLogin)
+        .catch(function (res) {
+          res.should.have.status(401);
+        })
     })
   })
 
   describe('Create user endpoint', function () {
     it('should create new user on a POST request', function () {
-
+      let newUser = {
+        email: "new@user.com",
+        password: "abc123",
+        firstName: "Matthew",
+        lastName: "Long"
+      }
+      return chai.request(app)
+        .post('/api/users')
+        .send(newUser)
+        .then(function (res) {
+          User.findOne({ email: newUser.email })
+            .then(user => {
+              user.name.firstName.should.equal(newUser.firstName);
+              user.name.lastName.should.equal(newUser.lastName);
+              user.password.should.not.equal(newUser.password);
+            })
+        })
+    })
+    it('should refuse creation if email already exists', function(){
+      let newUser = {
+        email: fakeUsers[0][0],
+        password: "abc123",
+        firstName: "Matthew",
+        lastName: "Long"
+      }
+      return chai.request(app)
+      .post('/api/users')
+      .send(newUser)
+      .catch(function(res){
+        res.should.have.status(422);
+      })
     })
   })
 
-  describe('/users/me endpoint', function () {
-    it('should return user information on a GET request', function () {
+  // describe('/users/me endpoint', function () {
+  //   it('should return user information on a GET request', function () {
 
-    })
-  })
+  //   })
+  // })
 
-  describe('/users/me/add-session endpoint', function () {
-    it('should add a session to user on a POST request', function () {
+  // describe('/users/me/add-session endpoint', function () {
+  //   it('should add a session to user on a POST request', function () {
 
-    })
-  })
+  //   })
+  // })
 
-  describe('/users/me/sessions endpoint', function () {
-    it('should delete a session on a DELETE request', function () {
+  // describe('/users/me/sessions endpoint', function () {
+  //   it('should delete a session on a DELETE request', function () {
 
-    })
-  })
+  //   })
+  // })
 });

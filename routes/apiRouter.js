@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { User } = require('../models/models');
-const cors =  require('cors');
+const cors = require('cors');
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -56,36 +56,36 @@ passport.deserializeUser((id, done) => {
 router.use(passport.initialize());
 
 router.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 router.options('*', cors())
 router.use(cors());
 
 router.get('/', (req, res) => {
-    res.json({message: "WinRate API"});
+    res.json({ message: "WinRate API" });
 });
 
 
 //POST to login a user
 router.post('/login', passport.authenticate('local'), (req, res) => {
     User.findById(req.user.id)
-    .exec()
-    .then(user => {
-        res.send(user.apiRepr());
-    })
+        .exec()
+        .then(user => {
+            res.send(user.apiRepr());
+        })
 });
 
 //GET a user's information
 router.get('/users/me', passport.authenticate('bearer', { session: false }), (req, res) => {
     //user is attached to request object by passport.deserializeUser
     User.findById(req.user.id)
-    .exec()
-    .then(user => {
-        res.send(user.apiRepr());
-    })
+        .exec()
+        .then(user => {
+            res.send(user.apiRepr());
+        })
 })
 
 //POST to create a new user
@@ -122,8 +122,10 @@ router.post('/users', (req, res) => {
         user => res.status(201).json(user.apiRepr())
         )
         .catch(err => {
-            console.error(err);
-            res.status(500).json({ message: 'Internal Server Error' });
+            //console.error(err);
+            if (!res.status) {
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
         })
 })
 
@@ -160,7 +162,7 @@ router.delete('/users/me/sessions', passport.authenticate('bearer', { session: f
             return res.json({ message: `Missing field: ${field}` });
         }
     }
-    User.findOneAndUpdate({ username: req.user.username }, { $pull: { sessions: { _id: req.body.sessionId } } }, {new: true})
+    User.findOneAndUpdate({ username: req.user.username }, { $pull: { sessions: { _id: req.body.sessionId } } }, { new: true })
         .exec()
         .then((user) => res.json(user.apiRepr()))
 })
