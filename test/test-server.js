@@ -13,14 +13,15 @@ chai.use(chaiHttp);
 let fakeUsers = [];
 
 function seedUsers(numUsers) {
+  fakeUsers = [];
   for (let i = 0; i < numUsers; i++) {
-    let user = [faker.internet.email(), faker.internet.password()]
+    let user = [faker.internet.email().toLowerCase(), faker.internet.password()]
     fakeUsers.push(user);
     return User.hashPassword(user[1])
       .then(function (hash) {
         return User.create(generateFakeUser(user[0], hash))
           .catch((err) => console.log(err))
-          //.then((user) => console.log(user))
+        //.then((user) => console.log(user))
       })
   }
 }
@@ -30,7 +31,7 @@ function generateFakeUser(email, hash) {
   let players = [faker.name.firstName(), faker.name.firstName(), faker.name.firstName(), faker.name.firstName(), faker.name.firstName()];
   //5 random game names
   let games = [faker.commerce.productName(), faker.commerce.productName(), faker.commerce.productName(), faker.commerce.productName(), faker.commerce.productName()]
-  let sessions = generateFakeSessions(Math.floor(Math.random()*10), players, games);
+  let sessions = generateFakeSessions(Math.floor(Math.random() * 10), players, games);
   return {
     password: hash,
     email: email,
@@ -43,13 +44,13 @@ function generateFakeUser(email, hash) {
   }
 }
 
-function generateFakeSessions(numSessions, players, games){
+function generateFakeSessions(numSessions, players, games) {
   let sessions = [];
-  for (let i=0; i<numSessions; i++){
+  for (let i = 0; i < numSessions; i++) {
     let session = {
-      game: games[Math.floor(Math.random()*(games.length - 1))],
+      game: games[Math.floor(Math.random() * (games.length - 1))],
       players: players,
-      winner: players[Math.floor(Math.random()*(players.length - 1))],
+      winner: players[Math.floor(Math.random() * (players.length - 1))],
       date: Date.now()
     };
     sessions.push(session);
@@ -87,7 +88,18 @@ describe('Winrate API', function () {
 
   describe('User login endpoint', function () {
     it('should log in a user on a POST request', function () {
-
+      let userLogin = {
+        email: fakeUsers[0][0],
+        password: fakeUsers[0][1]
+      }
+      return chai.request(app)
+        .post('/api/login')
+        .send(userLogin)
+        .then(function (res) {
+          res.should.have.status(200);
+          res.should.be.json;
+          res.body.email.should.equal(fakeUsers[0][0]);
+        })
     })
   })
 
