@@ -12,9 +12,8 @@ chai.use(chaiHttp);
 let fakeUsers = [];
 
 function seedUsers(numUsers) {
-    for (let i = 0; i++; i < numUsers) {
-      //let user = [faker.internet.email(), faker.internet.password()]
-      let user = "Matt";
+    for (let i = 0; i < numUsers; i++) {
+      let user = [faker.internet.email(), faker.internet.password()]
       fakeUsers.push(user);
     }
     console.log(fakeUsers);
