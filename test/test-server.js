@@ -98,8 +98,22 @@ describe('Winrate API', function () {
         .then(function (res) {
           res.should.have.status(200);
           res.should.be.json;
+          res.body.should.be.a('object');
           res.body.email.should.equal(fakeUsers[0][0]);
         })
+    })
+
+    it('should refuse login with incorrect credentials', function(){
+      let userLogin = {
+        email: fakeUsers[0][0],
+        password: "wrongpassword"
+      }
+      return chai.request(app)
+      .post('/api/login')
+      .send(userLogin)
+      .catch(function(res){
+        res.should.have.status(401);
+      })
     })
   })
 
