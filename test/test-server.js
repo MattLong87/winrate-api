@@ -193,13 +193,13 @@ describe('Winrate API', function () {
       return chai.request(app)
         .post('/api/login')
         .send(userLogin)
-        .then(function(res){
+        .then(function (res) {
           const token = res.body.token;
           return chai.request(app)
             .post('/api/users/me/add-session')
             .set('Authorization', `Bearer ${token}`)
             .send(newSession)
-            .then(function(_res){
+            .then(function (_res) {
               let res = _res;
               res.should.have.status(201);
               res.body.sessions[0].should.shallowDeepEqual(newSession);
@@ -208,9 +208,28 @@ describe('Winrate API', function () {
     })
   })
 
-  // describe('/users/me/sessions endpoint', function () {
-  //   it('should delete a session on a DELETE request', function () {
-
-  //   })
-  // })
+  describe('/users/me/sessions endpoint', function () {
+    it('should delete a session on a DELETE request', function () {
+      let userLogin = {
+        email: fakeUsers[0][0],
+        password: fakeUsers[0][1]
+      }
+      return chai.request(app)
+        .post('/api/login')
+        .send(userLogin)
+        .then(function(res) {
+          const token = res.body.token;
+          const sessionId = res.body.sessions[0]._id;
+          return chai.request(app)
+            .delete('/api/users/me/sessions')
+            .set('Authorization', `Bearer ${token}`)
+            .send({sessionId: sessionId})
+            .then(function(_res){
+              //delete route returns user object
+              let res = _res;
+              res.body.sessions[0]._id.should.not.equal(sessionId);
+            })
+        })
+    })
+  })
 });
