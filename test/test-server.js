@@ -8,6 +8,7 @@ const { User } = require('../models/models');
 
 const should = chai.should();
 chai.use(chaiHttp);
+chai.use(require('chai-shallow-deep-equal'));
 
 //declare fakeUsers array to access in tests
 let fakeUsers = [];
@@ -137,7 +138,7 @@ describe('Winrate API', function () {
             })
         })
     })
-    it('should refuse creation if email already exists', function(){
+    it('should refuse creation if email already exists', function () {
       let newUser = {
         email: fakeUsers[0][0],
         password: "abc123",
@@ -145,25 +146,67 @@ describe('Winrate API', function () {
         lastName: "Long"
       }
       return chai.request(app)
-      .post('/api/users')
-      .send(newUser)
-      .catch(function(res){
-        res.should.have.status(422);
-      })
+        .post('/api/users')
+        .send(newUser)
+        .catch(function (res) {
+          res.should.have.status(422);
+        })
     })
   })
 
-  // describe('/users/me endpoint', function () {
-  //   it('should return user information on a GET request', function () {
+  describe('/users/me endpoint', function () {
+    it('should return user information on a GET request', function () {
+      let userLogin = {
+        email: fakeUsers[0][0],
+        password: fakeUsers[0][1]
+      }
+      return chai.request(app)
+        .post('/api/login')
+        .send(userLogin)
+        .then(function (res) {
+          const token = res.body.token;
+          return chai.request(app)
+            .get('/api/users/me')
+            .set('Authorization', `Bearer ${token}`)
+            .then(function (_res) {
+              let res = _res;
+              res.should.have.status(200);
+              res.should.be.json;
+              res.body.email.should.equal(userLogin.email);
+            })
+        })
+    })
+  })
 
-  //   })
-  // })
-
-  // describe('/users/me/add-session endpoint', function () {
-  //   it('should add a session to user on a POST request', function () {
-
-  //   })
-  // })
+  describe('/users/me/add-session endpoint', function () {
+    it('should add a session to user on a POST request', function () {
+      let userLogin = {
+        email: fakeUsers[0][0],
+        password: fakeUsers[0][1]
+      }
+      let newSession = {
+        game: "Test Game",
+        players: ["a", "b", "c"],
+        winner: "a",
+        date: "today"
+      }
+      return chai.request(app)
+        .post('/api/login')
+        .send(userLogin)
+        .then(function(res){
+          const token = res.body.token;
+          return chai.request(app)
+            .post('/api/users/me/add-session')
+            .set('Authorization', `Bearer ${token}`)
+            .send(newSession)
+            .then(function(_res){
+              let res = _res;
+              res.should.have.status(201);
+              res.body.sessions[0].should.shallowDeepEqual(newSession);
+            })
+        })
+    })
+  })
 
   // describe('/users/me/sessions endpoint', function () {
   //   it('should delete a session on a DELETE request', function () {
