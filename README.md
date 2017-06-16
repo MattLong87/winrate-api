@@ -30,6 +30,7 @@ Required body fields:
 
 ### User Creation
 **POST /api/users**
+
 Required body fields:
 * email
 * password
@@ -41,6 +42,7 @@ Required body fields:
 
 ### Add A Session
 **POST /api/users/me/add-sessions**
+
 Required body fields:
 * game (string)
 * players (array)
@@ -49,5 +51,6 @@ Required body fields:
 
 ### Delete a session
 **DELETE /api/users/me/sessions**
+
 Required body fields:
 * sessionId
