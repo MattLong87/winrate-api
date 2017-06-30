@@ -145,7 +145,7 @@ router.post('/users/me/add-session', passport.authenticate('bearer', { session: 
         winner: req.body.winner,
         date: req.body.date
     };
-    User.findOneAndUpdate({ username: req.user.username }, { $push: { sessions: { $each: [newSession], $position: 0 } } }, { new: true })
+    User.findOneAndUpdate({ email: req.user.email }, { $push: { sessions: { $each: [newSession], $position: 0 } } }, { new: true })
         .exec()
         .then((user) => {
             res.status(201).json(user.apiRepr());
@@ -162,7 +162,7 @@ router.delete('/users/me/sessions', passport.authenticate('bearer', { session: f
             return res.json({ message: `Missing field: ${field}` });
         }
     }
-    User.findOneAndUpdate({ username: req.user.username }, { $pull: { sessions: { _id: req.body.sessionId } } }, { new: true })
+    User.findOneAndUpdate({ email: req.user.email }, { $pull: { sessions: { _id: req.body.sessionId } } }, { new: true })
         .exec()
         .then((user) => res.json(user.apiRepr()))
 })
